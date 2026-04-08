@@ -1,0 +1,13 @@
+{
+  "name": "tourism-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static tourism dashboard pages with a simple Node.js local server.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voyage Analytics — Pipeline</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="common.css" />
+  <link rel="stylesheet" href="pipeline.css" />
+</head>
+<body data-page="pipeline">
+  <nav class="topnav" id="topnav">
+    <div class="nav-brand">
+      <div class="dot"></div>
+      Voyage Analytics
+    </div>
+    <div class="nav-links">
+      <a class="nav-link" href="home.html">Home</a>
+      <a class="nav-link" href="dashboard.html">Dashboard</a>
+      <a class="nav-link active" href="pipeline.html">Pipeline</a>
+    </div>
+    <div class="nav-actions">
+      <div class="live-badge">
+        <div class="live-dot"></div>
+        LIVE
+      </div>
+      <span id="live-clock">--:--:--</span>
+    </div>
+  </nav>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="pipeline-page">
+    <div class="pipeline-header">
+      <div class="section-tag"><span class="material-symbols-outlined" style="font-size:0.8rem">schema</span> Data Pipeline</div>
+      <h1 class="section-title" style="font-size: 3rem;">Pipeline Pengolahan Data</h1>
+      <p class="section-subtitle">
+        Transformasi cerdas dari data mentah <code>Tourism_Dataset.csv</code> menjadi wawasan pariwisata presisi tinggi menggunakan kerangka kerja Voyage Analytics.
+      </p>
+    </div>
+
+    <div class="pipeline-steps">
+      <div class="step-card reveal">
+        <div class="step-num mono">// LANGKAH 01</div>
+        <div class="step-icon" style="background: rgba(26,79,212,0.1); color: var(--accent);">
+          <span class="material-symbols-outlined">dataset</span>
+        </div>
+        <div class="step-title">Data Collection & Connection</div>
+        <div class="step-desc">Menghubungkan ke <code>Tourism_Dataset.csv</code> dengan validasi struktur otomatis dan sinkronisasi field yang fleksibel.</div>
+        <div class="step-tags">
+          <div class="step-tag">CSV</div>
+          <div class="step-tag">Auto-detect</div>
+        </div>
+      </div>
+
+      <div class="step-card wide reveal">
+        <div class="step-num mono" style="color:var(--accent3);">// LANGKAH 02</div>
+        <div style="display:flex; gap:32px; flex-wrap:wrap; align-items:flex-start;">
+          <div style="flex:1; min-width:200px;">
+            <div class="step-icon" style="background: rgba(12,154,110,0.1); color: var(--accent3);">
+              <span class="material-symbols-outlined">cleaning_services</span>
+            </div>
+            <div class="step-title">Data Cleaning (Prep)</div>
+            <div class="step-desc">Proses validasi data otomatis untuk memastikan integritas dan konsistensi dataset:</div>
+            <ul class="checklist">
+              <li>Pengisian nilai null pada kolom Rating & Revenue</li>
+              <li>Standarisasi format nama Lokasi & Negara</li>
+              <li>Penghapusan entri duplikat berdasarkan koordinat</li>
+              <li>Normalisasi format mata uang Revenue</li>
+            </ul>
+          </div>
+          <div style="flex:1; min-width:200px;">
+            <div style="background: var(--cream); border-radius:14px; padding:20px; height:100%; display:flex; flex-direction:column; gap:10px;">
+              <div style="font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted);">Hasil Cleaning</div>
+              <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border);">
+                <span style="font-size:0.8rem; color:var(--muted);">Data Mentah</span>
+                <span class="mono" style="font-size:0.8rem; font-weight:600;">500 baris</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border);">
+                <span style="font-size:0.8rem; color:var(--muted);">Duplikat Dihapus</span>
+                <span class="mono" style="font-size:0.8rem; font-weight:600; color:var(--accent2);">63 baris</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; padding:8px 0;">
+                <span style="font-size:0.8rem; color:var(--muted);">Data Bersih</span>
+                <span class="mono" style="font-size:0.8rem; font-weight:600; color:var(--accent3);">437 baris ✓</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card reveal" style="background: var(--cream);">
+        <div class="step-num mono" style="color:var(--gold);">// LANGKAH 03</div>
+        <div class="step-icon" style="background: rgba(201,162,39,0.15); color: var(--gold);">
+          <span class="material-symbols-outlined">explore</span>
+        </div>
+        <div class="step-title">Context Understanding</div>
+        <div class="step-desc">Segmentasi semantik berdasarkan kategori pariwisata — memisahkan destinasi <strong>Nature</strong>, <strong>Historical</strong>, dan <strong>Cultural</strong> untuk analisis perilaku yang mendalam.</div>
+      </div>
+
+      <div class="step-card reveal">
+        <div class="step-num mono">// LANGKAH 04</div>
+        <div class="step-icon" style="background: rgba(26,79,212,0.1); color: var(--accent);">
+          <span class="material-symbols-outlined">schema</span>
+        </div>
+        <div class="step-title">Data Transformation</div>
+        <div class="step-desc">Membangun relasi hierarki data multidimensi:</div>
+        <div style="margin-top:12px; font-family:monospace; font-size:0.75rem; background:var(--cream); padding:12px; border-radius:10px; line-height:2;">
+          Country → Location → Category<br />
+          Visitors ↔ Rating ↔ Revenue<br />
+          Accommodation_Available → Filter
+        </div>
+      </div>
+
+      <div class="step-card reveal">
+        <div class="step-num mono">// LANGKAH 05</div>
+        <div class="step-icon" style="background: rgba(10,15,30,0.06); color: var(--muted);">
+          <span class="material-symbols-outlined">leaderboard</span>
+        </div>
+        <div class="step-title">Visual Selection</div>
+        <div class="step-desc">Pemilihan representasi data terbaik untuk meminimalisir beban kognitif pengguna dengan Chart.js real-time.</div>
+        <div class="step-tags">
+          <div class="step-tag">Bar Chart</div>
+          <div class="step-tag">Pie Chart</div>
+          <div class="step-tag">Canvas Map</div>
+        </div>
+      </div>
+
+      <div class="step-card highlight wide reveal">
+        <div class="step-num mono">// LANGKAH 06 — FINAL</div>
+        <div class="step-icon" style="background: rgba(255,255,255,0.15); color: #fff;">
+          <span class="material-symbols-outlined">auto_awesome</span>
+        </div>
+        <div class="step-title">Final Insight Dashboard</div>
+        <div class="step-desc">Penyusunan akhir menjadi dashboard interaktif real-time yang siap dikonsumsi oleh pemangku kepentingan untuk pengambilan keputusan strategis pariwisata Indonesia.</div>
+        <div style="margin-top:20px;">
+          <a class="btn-primary" href="dashboard.html" style="display:inline-flex;">
+            <span class="material-symbols-outlined" style="font-size:1rem;">open_in_new</span>
+            Buka Dashboard
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="metrics-row">
+      <div class="metric-block reveal">
+        <div class="metric-val count-up" data-target="99" data-suffix=".8%">0%</div>
+        <div class="metric-label">Akurasi Data</div>
+      </div>
+      <div class="metric-block reveal">
+        <div class="metric-val" style="font-size:2.5rem;">1.2s</div>
+        <div class="metric-label">Waktu Proses</div>
+      </div>
+      <div class="metric-block reveal">
+        <div class="metric-val count-up" data-target="437" data-suffix="+">0</div>
+        <div class="metric-label">Titik Lokasi Teranalisis</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div>© 2024 Voyage Analytics Intelligence.</div>
+    <div class="footer-links">
+      <a class="btn-ghost" href="dashboard.html">Dashboard</a>
+      <a href="home.html">Home</a>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

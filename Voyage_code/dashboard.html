@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voyage Analytics — Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="common.css" />
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+<body data-page="dashboard">
+  <nav class="topnav" id="topnav">
+    <div class="nav-brand">
+      <div class="dot"></div>
+      Voyage Analytics
+    </div>
+    <div class="nav-links">
+      <a class="nav-link" href="home.html">Home</a>
+      <a class="nav-link active" href="dashboard.html">Dashboard</a>
+      <a class="nav-link" href="pipeline.html">Pipeline</a>
+    </div>
+    <div class="nav-actions">
+      <div class="live-badge">
+        <div class="live-dot"></div>
+        LIVE
+      </div>
+      <span id="live-clock">--:--:--</span>
+    </div>
+  </nav>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="layout-with-sidebar">
+    <aside class="sidebar">
+      <div class="sidebar-label">Menu</div>
+      <button class="sidebar-item active" id="sb-dashboard" onclick="switchSidebar('dashboard')">
+        <span class="material-symbols-outlined">dashboard</span> Dashboard
+      </button>
+      <button class="sidebar-item" id="sb-map" onclick="switchSidebar('map')">
+        <span class="material-symbols-outlined">map</span> Map View
+      </button>
+      <button class="sidebar-item" id="sb-analytics" onclick="switchSidebar('analytics')">
+        <span class="material-symbols-outlined">analytics</span> Analytics
+      </button>
+      <button class="sidebar-item" id="sb-table" onclick="switchSidebar('table')">
+        <span class="material-symbols-outlined">table_chart</span> Data Table
+      </button>
+
+      <div class="sidebar-label" style="margin-top: auto;">Tools</div>
+      <a class="sidebar-item" href="pipeline.html">
+        <span class="material-symbols-outlined">schema</span> Pipeline
+      </a>
+      <a class="sidebar-item" href="home.html">
+        <span class="material-symbols-outlined">home</span> Home
+      </a>
+    </aside>
+
+    <main class="main-content">
+      <div class="section-header">
+        <h2 class="section-title" style="font-size:1.8rem;">Regional Tourism Performance</h2>
+        <p style="color:var(--muted); font-size:0.875rem;">Real-time analytics — <span id="last-update">Memuat...</span></p>
+      </div>
+
+      <div class="filter-bar" id="filterBar">
+        <div class="filter-group">
+          <div class="filter-label">Pilih Kota</div>
+          <select class="filter-select" id="cityFilter" onchange="applyFilters()">
+            <option value="all">Semua Kota</option>
+            <option value="Jakarta">Jakarta</option>
+            <option value="Yogyakarta">Yogyakarta</option>
+            <option value="Bandung">Bandung</option>
+            <option value="Surabaya">Surabaya</option>
+            <option value="Semarang">Semarang</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <div class="filter-label">Kategori Wisata</div>
+          <select class="filter-select" id="catFilter" onchange="applyFilters()">
+            <option value="all">Semua Kategori</option>
+            <option value="Nature">Alam</option>
+            <option value="Historical">Sejarah</option>
+            <option value="Cultural">Budaya</option>
+            <option value="Entertainment">Hiburan</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <div class="filter-label">Min Rating: <span id="ratingVal">1.0</span></div>
+          <input class="filter-range" type="range" id="ratingFilter" min="1" max="5" step="0.1" value="1" oninput="document.getElementById('ratingVal').textContent = parseFloat(this.value).toFixed(1); applyFilters();" />
+        </div>
+        <button class="filter-btn" onclick="resetFilters()">
+          <span class="material-symbols-outlined" style="font-size:0.9rem; vertical-align:middle;">refresh</span>
+          Reset
+        </button>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Total Destinasi</div>
+          <div class="kpi-value count-up" id="kpi-total" data-target="437">437</div>
+          <div class="kpi-trend up"><span class="material-symbols-outlined" style="font-size:0.9rem">trending_up</span> +12% vs Quarter Lalu</div>
+          <div class="kpi-bg-icon">location_on</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Rata-rata Rating</div>
+          <div class="kpi-value" id="kpi-rating" style="color:var(--gold);">4.4★</div>
+          <div class="kpi-trend up"><span class="material-symbols-outlined" style="font-size:0.9rem">star</span> Top-rated kota</div>
+          <div class="kpi-bg-icon">star</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Kategori Terbanyak</div>
+          <div class="kpi-value" id="kpi-cat" style="font-size:1.3rem; line-height:1.3; padding-top:4px;">Nature</div>
+          <div class="kpi-trend neutral">Dominan di semua kota</div>
+          <div class="kpi-bg-icon">category</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Avg Revenue (USD)</div>
+          <div class="kpi-value" id="kpi-rev" style="font-size:1.6rem;">$8.2B</div>
+          <div class="kpi-trend up"><span class="material-symbols-outlined" style="font-size:0.9rem">trending_up</span> Estimasi tahunan</div>
+          <div class="kpi-bg-icon">payments</div>
+        </div>
+      </div>
+
+      <div id="view-dashboard">
+        <div class="chart-grid">
+          <div class="chart-card chart-full">
+            <div class="chart-title">Volume Kunjungan per Kota</div>
+            <div class="chart-subtitle">Distribusi jumlah destinasi aktif per kota metropolitan</div>
+            <div class="chart-wrap" style="height:280px">
+              <canvas id="cityChart"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Distribusi Kategori Wisata</div>
+            <div class="chart-subtitle">Proporsi kategori dari dataset</div>
+            <div class="chart-wrap" style="height:260px">
+              <canvas id="catChart"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Top Rated Destinations</div>
+            <div class="chart-subtitle">Berdasarkan rata-rata rating pengunjung</div>
+            <div class="bar-list" id="barList"></div>
+          </div>
+          <div class="chart-card chart-full">
+            <div class="chart-title">Rating Distribution</div>
+            <div class="chart-subtitle">Sebaran nilai rating di semua destinasi</div>
+            <div class="chart-wrap" style="height:240px">
+              <canvas id="ratingChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="view-map" style="display:none;">
+        <div class="chart-card" style="min-height:500px;">
+          <div class="chart-title">Sebaran Destinasi — Peta Interaktif</div>
+          <div class="chart-subtitle">Titik konsentrasi destinasi wisata per kota</div>
+          <canvas id="mapViewCanvas" style="width:100%; height:440px; border-radius:12px; margin-top:8px;"></canvas>
+        </div>
+      </div>
+
+      <div id="view-analytics" style="display:none;">
+        <div class="chart-grid">
+          <div class="chart-card">
+            <div class="chart-title">Accommodation vs No Accommodation</div>
+            <div class="chart-subtitle">Proporsi destinasi dengan akomodasi tersedia</div>
+            <div class="chart-wrap" style="height:280px">
+              <canvas id="accomChart"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Revenue by Category (USD)</div>
+            <div class="chart-subtitle">Total estimasi revenue per kategori wisata</div>
+            <div class="chart-wrap" style="height:280px">
+              <canvas id="revChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="view-table" style="display:none;">
+        <div class="chart-card">
+          <div class="chart-title">Data Destinasi Wisata</div>
+          <div class="chart-subtitle" id="tableCount">Menampilkan data...</div>
+          <div style="overflow-x:auto; margin-top:16px;">
+            <table class="data-table" id="dataTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Lokasi</th>
+                  <th>Negara</th>
+                  <th>Kategori</th>
+                  <th>Pengunjung</th>
+                  <th>Rating</th>
+                  <th>Revenue (USD)</th>
+                  <th>Akomodasi</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+          <div style="margin-top:16px; display:flex; gap:8px; flex-wrap:wrap;" id="tablePagination"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <footer>
+    <div>© 2024 Voyage Analytics Intelligence.</div>
+    <div class="footer-links">
+      <a class="btn-ghost" href="home.html">Home</a>
+      <a href="pipeline.html">Pipeline</a>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

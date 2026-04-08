@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voyage Analytics — Home</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="common.css" />
+  <link rel="stylesheet" href="home.css" />
+</head>
+<body data-page="home">
+  <nav class="topnav" id="topnav">
+    <div class="nav-brand">
+      <div class="dot"></div>
+      Voyage Analytics
+    </div>
+    <div class="nav-links">
+      <a class="nav-link active" href="home.html">Home</a>
+      <a class="nav-link" href="dashboard.html">Dashboard</a>
+      <a class="nav-link" href="pipeline.html">Pipeline</a>
+    </div>
+    <div class="nav-actions">
+      <div class="live-badge">
+        <div class="live-dot"></div>
+        LIVE
+      </div>
+      <span id="live-clock">--:--:--</span>
+    </div>
+  </nav>
+
+  <div class="toast" id="toast"></div>
+
+  <section class="hero">
+    <div>
+      <div class="hero-eyebrow">
+        <span class="material-symbols-outlined" style="font-size:0.9rem">satellite_alt</span>
+        Indonesia Tourism Intel
+      </div>
+      <h1 class="hero-title reveal">
+        Tourism Data Insight:<br />
+        <span>Menjelajahi Pesona 5 Kota Besar Indonesia</span>
+      </h1>
+      <p class="hero-desc reveal">
+        Platform analisis pariwisata interaktif real-time. Menyajikan pengolahan data dari 437 destinasi wisata di Jakarta, Yogyakarta, Bandung, Semarang, dan Surabaya — mengubah data mentah menjadi wawasan strategis.
+      </p>
+      <div class="hero-btns reveal">
+        <a class="btn-primary" href="dashboard.html">
+          <span class="material-symbols-outlined" style="font-size:1rem">dashboard</span>
+          Lihat Dashboard
+        </a>
+        <a class="btn-ghost" href="pipeline.html">
+          Pelajari Proses Data
+        </a>
+      </div>
+    </div>
+    <div class="hero-visual reveal">
+      <div class="floating-badge">
+        <div class="floating-badge-icon">
+          <span class="material-symbols-outlined">analytics</span>
+        </div>
+        <div>
+          <div class="floating-badge-title">Rating Score</div>
+          <div class="floating-badge-val">4.4 / 5.0 ★</div>
+        </div>
+      </div>
+      <div class="hero-card-main">
+        <canvas id="mapCanvas" class="hero-map-canvas"></canvas>
+        <div class="hero-stats-overlay">
+          <div class="hero-stat">
+            <div class="hero-stat-val count-up" data-target="437">0</div>
+            <div class="hero-stat-label">Destinasi</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-val count-up" data-target="5">0</div>
+            <div class="hero-stat-label">Kota</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="ticker-wrap">
+    <div class="ticker-inner" id="tickerInner">
+      <div class="ticker-item"><span class="material-symbols-outlined">location_on</span> Jakarta — 124 destinasi aktif</div>
+      <div class="ticker-item"><span class="material-symbols-outlined">star</span> Avg Rating: 4.4/5.0</div>
+      <div class="ticker-item"><span class="material-symbols-outlined">location_on</span> Yogyakarta — 89 destinasi aktif</div>
+      <div class="ticker-item"><span class="material-symbols-outlined">trending_up</span> Revenue +12% QoQ</div>
+      <div class="ticker-item"><span class="material-symbols-outlined">location_on</span> Bandung — 78 destinasi aktif</div>
+      <div class="ticker-item"><span class="material-symbols-outlined">category</span> Top Kategori: Taman Hiburan</div>
+      <div class="ticker-item"><span class="material-symbols-outlined">location_on</span> Surabaya — 82 destinasi aktif</div>
+      <div class="ticker-item"><span class="material-symbols-outlined">payments</span> Avg Harga: Rp 45.000</div>
+      <div class="ticker-item"><span class="material-symbols-outlined">location_on</span> Semarang — 64 destinasi aktif</div>
+      <div class="ticker-item"><span class="material-symbols-outlined">schedule</span> Data diperbarui real-time</div>
+      <div class="ticker-item"><span class="material-symbols-outlined">location_on</span> Jakarta — 124 destinasi aktif</div>
+      <div class="ticker-item"><span class="material-symbols-outlined">star</span> Avg Rating: 4.4/5.0</div>
+      <div class="ticker-item"><span class="material-symbols-outlined">location_on</span> Yogyakarta — 89 destinasi aktif</div>
+      <div class="ticker-item"><span class="material-symbols-outlined">trending_up</span> Revenue +12% QoQ</div>
+      <div class="ticker-item"><span class="material-symbols-outlined">location_on</span> Bandung — 78 destinasi aktif</div>
+      <div class="ticker-item"><span class="material-symbols-outlined">category</span> Top Kategori: Taman Hiburan</div>
+      <div class="ticker-item"><span class="material-symbols-outlined">location_on</span> Surabaya — 82 destinasi aktif</div>
+      <div class="ticker-item"><span class="material-symbols-outlined">payments</span> Avg Harga: Rp 45.000</div>
+    </div>
+  </div>
+
+  <section class="cities-section">
+    <div class="cities-inner">
+      <div class="section-header reveal">
+        <div class="section-tag"><span class="material-symbols-outlined" style="font-size:0.8rem">public</span> Cakupan Wilayah</div>
+        <h2 class="section-title">Data dari 5 Kota Metropolitan</h2>
+        <p class="section-subtitle">Data komprehensif dari pusat gravitasi pariwisata Indonesia yang telah dianalisis secara mendalam.</p>
+      </div>
+      <div class="cities-grid">
+        <a class="city-card reveal" href="dashboard.html?city=Jakarta">
+          <div class="city-card-bg" style="background: linear-gradient(135deg, #1a4fd4, #0a0f1e), url('https://images.unsplash.com/photo-1555899434-94d1368aa7af?w=800') center/cover; background-blend-mode: multiply;"></div>
+          <div class="city-card-overlay"></div>
+          <div class="city-card-content">
+            <div class="city-name">Jakarta</div>
+            <div class="city-meta">Pusat Bisnis & Rekreasi Urban</div>
+            <div class="city-count"><span class="material-symbols-outlined" style="font-size:0.8rem">location_on</span> 124 destinasi</div>
+          </div>
+        </a>
+        <a class="city-card reveal" href="dashboard.html?city=Yogyakarta">
+          <div class="city-card-bg" style="background: linear-gradient(135deg, #c9a227, #5c3d00);"></div>
+          <div class="city-card-overlay"></div>
+          <div class="city-card-content">
+            <div class="city-name">Yogyakarta</div>
+            <div class="city-meta">Budaya & Heritage</div>
+            <div class="city-count"><span class="material-symbols-outlined" style="font-size:0.8rem">location_on</span> 89 destinasi</div>
+          </div>
+        </a>
+        <a class="city-card reveal" href="dashboard.html?city=Bandung">
+          <div class="city-card-bg" style="background: linear-gradient(135deg, #0c9a6e, #013d2a);"></div>
+          <div class="city-card-overlay"></div>
+          <div class="city-card-content">
+            <div class="city-name">Bandung</div>
+            <div class="city-meta">Alam & Kuliner</div>
+            <div class="city-count"><span class="material-symbols-outlined" style="font-size:0.8rem">location_on</span> 78 destinasi</div>
+          </div>
+        </a>
+        <a class="city-card reveal" href="dashboard.html?city=Surabaya">
+          <div class="city-card-bg" style="background: linear-gradient(135deg, #e8421a, #5c1500);"></div>
+          <div class="city-card-overlay"></div>
+          <div class="city-card-content">
+            <div class="city-name">Surabaya</div>
+            <div class="city-meta">Pelabuhan & Perdagangan</div>
+            <div class="city-count"><span class="material-symbols-outlined" style="font-size:0.8rem">location_on</span> 82 destinasi</div>
+          </div>
+        </a>
+        <a class="city-card reveal" href="dashboard.html?city=Semarang" style="grid-column: span 2;">
+          <div class="city-card-bg" style="background: linear-gradient(135deg, #5c3d8a, #1a0040);"></div>
+          <div class="city-card-overlay"></div>
+          <div class="city-card-content">
+            <div class="city-name">Semarang</div>
+            <div class="city-meta">Kota Tua & Kuliner Khas</div>
+            <div class="city-count"><span class="material-symbols-outlined" style="font-size:0.8rem">location_on</span> 64 destinasi</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="method-section">
+    <div class="section-header reveal">
+      <div class="section-tag">Metodologi</div>
+      <h2 class="section-title">Bagaimana Kami Bekerja</h2>
+      <p class="section-subtitle">Transformasi data mentah menjadi wawasan strategis pariwisata menggunakan pipeline analitik terintegrasi.</p>
+    </div>
+    <div class="method-grid">
+      <div class="method-card reveal">
+        <div class="method-icon"><span class="material-symbols-outlined">dataset</span></div>
+        <div class="method-title">Data Aggregation</div>
+        <div class="method-desc">Pengumpulan data dari 437 titik destinasi secara presisi, mencakup koordinat geografis, identitas budaya, dan data kunjungan real-time.</div>
+      </div>
+      <div class="method-card reveal">
+        <div class="method-icon" style="background: rgba(12,154,110,0.08); color: var(--accent3);"><span class="material-symbols-outlined">monitoring</span></div>
+        <div class="method-title">Metric Processing</div>
+        <div class="method-desc">Analisis mendalam terhadap rating pengunjung dan kategori biaya untuk menentukan daya saing kompetitif dan peluang pengembangan.</div>
+      </div>
+      <div class="method-card reveal">
+        <div class="method-icon" style="background: rgba(201,162,39,0.12); color: var(--gold);"><span class="material-symbols-outlined">insights</span></div>
+        <div class="method-title">Strategic Insight</div>
+        <div class="method-desc">Visualisasi interaktif yang membantu stakeholder mengambil keputusan berbasis data untuk pengembangan pariwisata yang berkelanjutan.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div>© 2024 Voyage Analytics Intelligence. Data pariwisata presisi tinggi.</div>
+    <div class="footer-links">
+      <a href="#" onclick="showToast('Dokumentasi akan segera hadir!')">Documentation</a>
+      <a class="btn-ghost" href="dashboard.html">Dashboard</a>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

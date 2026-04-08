@@ -1,0 +1,30 @@
+# Node dependencies
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime files
+.DS_Store
+Thumbs.db
+.env
+
+# Optional npm cache
+.npm
+
+# VS Code settings
+.vscode/
+
+# Build outputs
+dist/
+build/
+
+# OS generated files
+ehthumbs.db
+Icon?
+
+# Local dataset cache or temporary files
+*.tmp
+*.temp
