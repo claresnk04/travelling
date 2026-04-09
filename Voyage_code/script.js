@@ -595,7 +595,7 @@ function drawMapView() {
   const canvas = document.getElementById('mapViewCanvas');
   if (!canvas) return;
   canvas.width = canvas.offsetWidth || 800;
-  canvas.height = 440;
+  canvas.height = 650;
   const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
 
