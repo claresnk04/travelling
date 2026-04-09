@@ -274,27 +274,29 @@
 .data-table {
   width: 100%;
   border-collapse: collapse;
+  font-size: 0.875rem;
 }
 
 .data-table th {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--muted);
-  padding: 10px 12px;
+  padding: 8px 10px;
   text-align: left;
   border-bottom: 2px solid var(--border);
+  white-space: nowrap;
 }
 
 .data-table td {
-  padding: 12px;
-  font-size: 0.875rem;
+  padding: 8px 10px;
+  font-size: 0.8rem;
   border-bottom: 1px solid var(--border);
 }
 
 .data-table tr:hover td {
-  background: var(--cream);
+  background: rgba(238, 238, 238, 0.5);
 }
 
 .rating-star {
@@ -322,6 +324,16 @@
 .badge-cultural {
   background: rgba(26,79,212,0.1);
   color: var(--accent);
+}
+
+.badge-adventure {
+  background: rgba(232,66,26,0.15);
+  color: #e8421a;
+}
+
+.badge-beach {
+  background: rgba(10,154,174,0.15);
+  color: #0a9aae;
 }
 
 .badge-other {

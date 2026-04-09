@@ -436,34 +436,61 @@ function renderTable() {
 function renderTablePage() {
   const start = (currentPage-1)*ROWS_PER_PAGE;
   const rows = filteredData.slice(start, start+ROWS_PER_PAGE);
-  document.getElementById('tableCount').textContent = `Menampilkan ${start+1}–${Math.min(start+ROWS_PER_PAGE, filteredData.length)} dari ${filteredData.length} destinasi`;
+  document.getElementById('tableCount').textContent = `${filteredData.length} destinasi • Halaman ${currentPage} dari ${Math.ceil(filteredData.length/ROWS_PER_PAGE)}`;
 
-  const catClass = {Nature:'badge-nature', Historical:'badge-historical', Cultural:'badge-cultural', Entertainment:'badge-other'};
+  const catClass = {Nature:'badge-nature', Historical:'badge-historical', Cultural:'badge-cultural', Entertainment:'badge-other', Adventure:'badge-adventure', Beach:'badge-beach'};
   const body = document.getElementById('tableBody');
-  body.innerHTML = rows.map((d,i) => `
+  body.innerHTML = rows.map((d,i) => {
+    const visitors = d.visitors >= 1e6 ? (d.visitors/1e6).toFixed(1)+'M' : (d.visitors/1e3).toFixed(0)+'K';
+    const revenue = (d.revenue/1e9).toFixed(1)+'B';
+    return `
     <tr>
-      <td style="color:var(--muted); font-size:0.75rem; font-family:monospace;">${start+i+1}</td>
-      <td style="font-weight:600;">${d.location}</td>
-      <td>${d.country}</td>
+      <td style="color:var(--muted); font-size:0.7rem;">${start+i+1}</td>
+      <td style="font-weight:600; font-size:0.85rem;">${d.location}</td>
+      <td style="font-size:0.8rem;">${d.country}</td>
       <td><span class="badge ${catClass[d.category]||'badge-other'}">${d.category}</span></td>
-      <td class="mono">${d.visitors.toLocaleString()}</td>
-      <td><span class="rating-star">★</span> ${d.rating.toFixed(1)}</td>
-      <td class="mono" style="font-size:0.8rem;">$${(d.revenue/1e9).toFixed(2)}B</td>
-      <td><span style="color:${d.accommodation==='Yes'?'var(--accent3)':'var(--muted)'}; font-weight:600;">${d.accommodation==='Yes'?'✓ Ya':'✗ Tidak'}</span></td>
+      <td style="font-size:0.8rem; text-align:right;">${visitors}</td>
+      <td><span class="rating-star">★</span><span style="font-size:0.85rem;">${d.rating.toFixed(1)}</span></td>
+      <td style="font-size:0.8rem; text-align:right;">$${revenue}</td>
     </tr>
-  `).join('');
+  `;}).join('');
 
   // Pagination
   const totalPages = Math.ceil(filteredData.length/ROWS_PER_PAGE);
   const pag = document.getElementById('tablePagination');
   pag.innerHTML = '';
-  for(let p=1; p<=totalPages; p++) {
+  
+  // Previous button
+  if(currentPage > 1) {
+    const prev = document.createElement('button');
+    prev.textContent = '← Prev';
+    prev.className = 'filter-btn';
+    prev.style.cssText = `padding:6px 12px; font-size:0.75rem; background:var(--cream); color:var(--ink);`;
+    prev.onclick = () => { currentPage--; renderTablePage(); };
+    pag.appendChild(prev);
+  }
+  
+  // Page buttons - show max 5 pages
+  const startPage = Math.max(1, currentPage-2);
+  const endPage = Math.min(totalPages, startPage+4);
+  
+  for(let p=startPage; p<=endPage; p++) {
     const btn = document.createElement('button');
     btn.textContent = p;
     btn.className = 'filter-btn';
-    btn.style.cssText = `padding:6px 14px; font-size:0.8rem; background:${p===currentPage?'var(--accent)':'var(--cream)'}; color:${p===currentPage?'#fff':'var(--ink)'};`;
+    btn.style.cssText = `padding:6px 10px; font-size:0.75rem; background:${p===currentPage?'var(--accent)':'var(--cream)'}; color:${p===currentPage?'#fff':'var(--ink)'}; min-width:34px;`;
     btn.onclick = () => { currentPage = p; renderTablePage(); };
     pag.appendChild(btn);
+  }
+  
+  // Next button
+  if(currentPage < totalPages) {
+    const next = document.createElement('button');
+    next.textContent = 'Next →';
+    next.className = 'filter-btn';
+    next.style.cssText = `padding:6px 12px; font-size:0.75rem; background:var(--cream); color:var(--ink);`;
+    next.onclick = () => { currentPage++; renderTablePage(); };
+    pag.appendChild(next);
   }
 }
 
