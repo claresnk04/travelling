@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "Static tourism dashboard pages with a simple Node.js local server.",
+  "repository": "https://github.com/claresnk04/travelling.git",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"

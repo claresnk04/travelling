@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Voyage Analytics — Dashboard</title>
+  <title>Tarveling — explore Your World</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="common.css" />
@@ -12,8 +12,8 @@
 <body data-page="dashboard">
   <nav class="topnav" id="topnav">
     <div class="nav-brand">
-      <div class="dot"></div>
-      Voyage Analytics
+      <img src="travelling.jpeg" alt="Logo Travelling" class="nav-logo">
+      <img src="Logo_TeknikIndustri.png" alt="Logo Teknik Industri UNY" class="nav-logo">
     </div>
     <div class="nav-links">
       <a class="nav-link" href="home.html">Home</a>
@@ -45,6 +45,9 @@
       </button>
       <button class="sidebar-item" id="sb-table" onclick="switchSidebar('table')">
         <span class="material-symbols-outlined">table_chart</span> Data Table
+      </button>
+      <button class="sidebar-item" id="sb-research" onclick="switchSidebar('research')">
+        <span class="material-symbols-outlined">science</span> Research Q.
       </button>
 
       <div class="sidebar-label" style="margin-top: auto;">Tools</div>
@@ -203,14 +206,90 @@
           <div style="margin-top:16px; display:flex; gap:8px; flex-wrap:wrap;" id="tablePagination"></div>
         </div>
       </div>
-    </main>
-  </div>
 
-  <footer>
-    <div>© 2024 Voyage Analytics Intelligence.</div>
-    <div class="footer-links">
-      <a class="btn-ghost" href="home.html">Home</a>
-      <a href="pipeline.html">Pipeline</a>
+      <div id="view-research" style="display:none;">
+        <div class="section-header reveal">
+          <div class="section-tag"><span class="material-symbols-outlined" style="font-size:0.8rem">science</span> Research Questions</div>
+          <h2 class="section-title">Pertanyaan Penelitian</h2>
+          <p class="section-subtitle">Analisis mendalam untuk menjawab 5 pertanyaan penelitian utama tentang destinasi wisata dan engagement digital.</p>
+        </div>
+
+        <div class="research-grid">
+          <!-- Question 1 -->
+          <div class="research-card reveal">
+            <div class="research-num">Q1</div>
+            <div class="research-title">Karakteristik Destinasi vs Engagement Digital</div>
+            <div class="research-question">Bagaimana karakteristik destinasi (kategori, rating, jumlah pengunjung, pendapatan) berhubungan dengan tingkat keterlibatan digital pengguna?</div>
+            <div class="chart-wrap" style="height:200px; margin-top:16px;">
+              <canvas id="chart-q1"></canvas>
+            </div>
+            <div class="research-insight" id="insight-q1">Memproses data...</div>
+          </div>
+
+          <!-- Question 2 -->
+          <div class="research-card reveal">
+            <div class="research-num">Q2</div>
+            <div class="research-title">Preferensi Device & Lokasi</div>
+            <div class="research-question">Apakah preferensi pengguna terhadap jenis perangkat dan lokasi memengaruhi pilihan destinasi yang dikunjungi?</div>
+            <div class="chart-wrap" style="height:200px; margin-top:16px;">
+              <canvas id="chart-q2"></canvas>
+            </div>
+            <div class="research-insight" id="insight-q2">Memproses data...</div>
+          </div>
+
+          <!-- Question 3 -->
+          <div class="research-card reveal">
+            <div class="research-num">Q3</div>
+            <div class="research-title">Engagement Digital vs Revenue</div>
+            <div class="research-question">Sejauh mana keterlibatan digital pengguna (waktu yang dihabiskan di web) berkorelasi dengan kontribusi pendapatan per destinasi?</div>
+            <div class="chart-wrap" style="height:200px; margin-top:16px;">
+              <canvas id="chart-q3"></canvas>
+            </div>
+            <div class="research-insight" id="insight-q3">Memproses data...</div>
+          </div>
+
+          <!-- Question 4 -->
+          <div class="research-card reveal">
+            <div class="research-num">Q4</div>
+            <div class="research-title">Social Media Followers & Pembelian</div>
+            <div class="research-question">Bagaimana pengaruh status sebagai pengikut (followers) media sosial terhadap keputusan pembelian produk wisata?</div>
+            <div class="chart-wrap" style="height:200px; margin-top:16px;">
+              <canvas id="chart-q4"></canvas>
+            </div>
+            <div class="research-insight" id="insight-q4">Memproses data...</div>
+          </div>
+
+          <!-- Question 5 -->
+          <div class="research-card reveal">
+            <div class="research-num">Q5</div>
+            <div class="research-title">Tren Revenue & Pengunjung</div>
+            <div class="research-question">Bagaimana tren pendapatan pariwisata dan jumlah pengunjung berkembang dalam skala dekade (1970s - 2020s)?</div>
+            <div class="chart-wrap" style="height:200px; margin-top:16px;">
+              <canvas id="chart-q5"></canvas>
+            </div>
+            <div class="research-insight" id="insight-q5">Memproses data...</div>
+          </div>
+
+          <!-- Summary Card -->
+          <div class="research-card reveal" style="grid-column: span 2;">
+            <div class="research-num">📊</div>
+            <div class="research-title">Ringkasan Temuan</div>
+            <div class="research-summary" id="research-summary">Analisis komprehensif dari 437 destinasi wisata di 5 kota metropolitan Indonesia...</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="toast" id="toast"></div>
+
+    <div class="footer-credits">
+      <div class="footer-section">
+        <div class="footer-label">Mata Kuliah Analitika Data</div>
+        <div class="footer-label">Teknik Industri - UNY</div>
+      </div>
+      <div class="footer-section">
+        <div class="footer-label">Dikembangkan Oleh:</div>
+        <div class="footer-developers">Nailah Azka Iftinah - 23051430026 | Novita Dian Susilowati - 23051430027</div>
+      </div>
     </div>
   </footer>
 

@@ -2,6 +2,8 @@
 
 Proyek dashboard wisata ini berisi halaman statis `HTML/CSS/JS` dan server Node.js kecil yang memuat dataset CSV lokal.
 
+**Repository:** https://github.com/claresnk04/travelling.git
+
 ## Isi Proyek
 
 - `Datasettt baru banget dasbord (tourism dataset fiks).csv` — dataset wisata utama
