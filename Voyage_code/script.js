@@ -51,12 +51,18 @@ async function loadDataset() {
     if (!Array.isArray(data)) throw new Error('Response dataset bukan array');
     CSV_DATA = data.map(item => ({
       location: item.location || '',
+      city: item.city || item.country || '',
       country: item.country || '',
       category: item.category || '',
       visitors: Number(item.visitors) || 0,
       rating: Number(item.rating) || 0,
       revenue: Number(item.revenue) || 0,
-      accommodation: item.accommodation || ''
+      accommodation: item.accommodation || '',
+      device_preference: item.device_preference || 'mobile',
+      location_preference: item.location_preference || 'urban',
+      engagement_time: Number(item.engagement_time) || 30,
+      social_followers: Number(item.social_followers) || 10000,
+      decade: item.decade || '2020s'
     }));
   } catch (error) {
     console.error('Gagal memuat dataset CSV:', error);
@@ -81,7 +87,6 @@ function showPage(page) {
     setTimeout(() => {
       initCharts();
       animateBars();
-      updateLastUpdate();
     }, 100);
   }
   if (page === 'home') {
@@ -96,10 +101,10 @@ function showPage(page) {
   setTimeout(revealElements, 100);
 }
 
-function filterCity(city) {
+function filterCity(country) {
   showPage('dashboard');
   setTimeout(() => {
-    document.getElementById('cityFilter').value = city;
+    document.getElementById('countryFilter').value = country;
     applyFilters();
   }, 300);
 }
@@ -117,41 +122,30 @@ function switchSidebar(view) {
 
   if (view === 'map') setTimeout(drawMapView, 100);
   if (view === 'analytics') setTimeout(initAnalyticsCharts, 100);
-  if (view === 'research') setTimeout(initResearchCharts, 100);
+  if (view === 'research') {
+    // Ensure data is loaded before initializing research charts
+    if (filteredData && filteredData.length > 0) {
+      setTimeout(initResearchCharts, 100);
+    } else {
+      console.log('Data not ready, waiting...');
+      setTimeout(() => switchSidebar('research'), 500);
+    }
+  }
   if (view === 'table') renderTable();
 }
 
-// ============================
-// LIVE CLOCK
-// ============================
-function startClock() {
-  function tick() {
-    const now = new Date();
-    const pad = n => String(n).padStart(2,'0');
-    document.getElementById('live-clock').textContent =
-      `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
-  }
-  tick();
-  setInterval(tick, 1000);
-}
 
-function updateLastUpdate() {
-  const lastUpdate = document.getElementById('last-update');
-  if (!lastUpdate) return;
-  const now = new Date();
-  lastUpdate.textContent = `Terakhir diperbarui: ${now.toLocaleTimeString('id-ID')}`;
-}
 
 // ============================
 // FILTERS
 // ============================
 function applyFilters() {
-  const city = document.getElementById('cityFilter').value;
+  const country = document.getElementById('countryFilter').value;
   const cat = document.getElementById('catFilter').value;
   const minRating = parseFloat(document.getElementById('ratingFilter').value);
 
   filteredData = CSV_DATA.filter(d => {
-    if (city !== 'all' && !d.location.toLowerCase().includes(city.toLowerCase()) && !d.country.toLowerCase().includes(city.toLowerCase())) return false;
+    if (country !== 'all' && d.country !== country) return false;
     if (cat !== 'all' && d.category !== cat) return false;
     if (d.rating < minRating) return false;
     return true;
@@ -163,7 +157,7 @@ function applyFilters() {
 }
 
 function resetFilters() {
-  document.getElementById('cityFilter').value = 'all';
+  document.getElementById('countryFilter').value = 'all';
   document.getElementById('catFilter').value = 'all';
   document.getElementById('ratingFilter').value = '1';
   document.getElementById('ratingVal').textContent = '1.0';
@@ -212,8 +206,13 @@ function updateCharts() {
 
 function catColors() {
   return {
-    Nature: '#0c9a6e', Historical: '#c9a227', Cultural: '#1a4fd4',
-    Entertainment: '#e8421a', Other: '#7a7668'
+    Adventure: '#e8421a',
+    Beach: '#0a9aae',
+    Cultural: '#1a4fd4',
+    Historical: '#c9a227',
+    Nature: '#0c9a6e',
+    Urban: '#5c3d8a',
+    Other: '#7a7668'
   };
 }
 
@@ -261,12 +260,18 @@ function renderCityChart(update) {
 }
 
 function getCity(d) {
+  // If city field is available, use it
+  if (d.city) return d.city;
+  
+  // Otherwise, infer from location
   const loc = d.location.toLowerCase();
   if (loc.includes('jakarta') || loc.includes('monas') || loc.includes('ancol') || loc.includes('kota tua') || loc.includes('dufan') || loc.includes('taman mini')) return 'Jakarta';
-  if (loc.includes('yogyakarta') || loc.includes('malioboro') || loc.includes('keraton') || loc.includes('prambanan') || loc.includes('borobudur')) return 'Yogyakarta';
+  if (loc.includes('yogyakarta') || loc.includes('malioboro') || loc.includes('keraton') || loc.includes('prambanan') || loc.includes('borobudur') || loc.includes('palace')) return 'Yogyakarta';
   if (loc.includes('bandung') || loc.includes('trans studio') || loc.includes('tangkuban') || loc.includes('tea plantation')) return 'Bandung';
-  if (loc.includes('surabaya') || loc.includes('sampoerna')) return 'Surabaya';
+  if (loc.includes('surabaya') || loc.includes('sampoerna') || loc.includes('bromo')) return 'Surabaya';
   if (loc.includes('semarang') || loc.includes('lawang sewu') || loc.includes('sam poo')) return 'Semarang';
+  if (loc.includes('bali') || loc.includes('beach') || loc.includes('gili')) return 'Bali';
+  if (loc.includes('lombok')) return 'Lombok';
   if (d.country === 'Indonesia') return 'Lainnya (Indonesia)';
   return d.country;
 }
@@ -489,6 +494,8 @@ function drawHeroMap() {
     {name:'Semarang', x:0.45, y:0.52, count:64, color:'#5c3d8a'},
     {name:'Yogyakarta', x:0.43, y:0.58, count:89, color:'#c9a227'},
     {name:'Surabaya', x:0.55, y:0.52, count:82, color:'#e8421a'},
+    {name:'Bali', x:0.55, y:0.70, count:95, color:'#0a9aae'},
+    {name:'Lombok', x:0.60, y:0.68, count:72, color:'#ff6b35'},
   ];
 
   // Draw connections
@@ -593,107 +600,150 @@ function animateHeroMap(ctx, W, H, cities) {
 // MAP VIEW (Dashboard)
 // ============================
 function drawMapView() {
-  const canvas = document.getElementById('mapViewCanvas');
-  if (!canvas) return;
-  canvas.width = canvas.offsetWidth || 800;
-  canvas.height = 650;
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
+  const mapContainer = document.getElementById('mapContainer');
+  if (!mapContainer) return;
 
-  ctx.fillStyle = '#0a0f1e';
-  ctx.fillRect(0,0,W,H);
+  // Initialize map if not already initialized
+  if (!window.tourismMap) {
+    window.tourismMap = L.map('mapContainer').setView([5, 110], 4);
 
-  // Grid
-  ctx.strokeStyle = 'rgba(255,255,255,0.04)';
-  for(let x=0;x<W;x+=30){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
-  for(let y=0;y<H;y+=30){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(window.tourismMap);
 
-  // Title label
-  ctx.fillStyle = 'rgba(255,255,255,0.3)';
-  ctx.font = "500 12px Arial, sans-serif";
-  ctx.fillText('▶ Peta Interaktif — Sebaran Destinasi Wisata Indonesia', 16, 28);
+    // City coordinates and data by country
+    const citiesByCountry = {
+      'Indonesia': [
+        {name:'Jakarta', lat:-6.2088, lng:106.8456, count:124, color:'#1a4fd4'},
+        {name:'Bandung', lat:-6.9175, lng:107.6191, count:78, color:'#0c9a6e'},
+        {name:'Semarang', lat:-6.9667, lng:110.4167, count:64, color:'#5c3d8a'},
+        {name:'Yogyakarta', lat:-7.7956, lng:110.3695, count:89, color:'#c9a227'},
+        {name:'Surabaya', lat:-7.2575, lng:112.7521, count:82, color:'#e8421a'},
+        {name:'Bali', lat:-8.6705, lng:115.2126, count:95, color:'#0a9aae'},
+        {name:'Lombok', lat:-8.6500, lng:116.3142, count:72, color:'#ff6b35'},
+      ],
+      'Thailand': [
+        {name:'Bangkok', lat:13.7563, lng:100.5018, count:110, color:'#1a4fd4'},
+        {name:'Phuket', lat:7.8804, lng:98.3923, count:85, color:'#0c9a6e'},
+        {name:'Krabi', lat:8.0863, lng:98.9063, count:75, color:'#5c3d8a'},
+        {name:'Chiang Mai', lat:18.7883, lng:98.9853, count:80, color:'#c9a227'},
+        {name:'Pattaya', lat:12.9271, lng:100.8765, count:70, color:'#e8421a'},
+      ],
+      'Vietnam': [
+        {name:'Hanoi', lat:21.0285, lng:105.8542, count:100, color:'#1a4fd4'},
+        {name:'Ho Chi Minh', lat:10.7769, lng:106.7009, count:105, color:'#0c9a6e'},
+        {name:'Ha Long', lat:20.9101, lng:107.1839, count:90, color:'#5c3d8a'},
+        {name:'Da Nang', lat:16.0544, lng:108.2022, count:80, color:'#c9a227'},
+        {name:'Sapa', lat:22.3402, lng:103.8343, count:65, color:'#e8421a'},
+      ],
+      'Philippines': [
+        {name:'Manila', lat:14.5994, lng:120.9842, count:95, color:'#1a4fd4'},
+        {name:'Cebu', lat:10.3157, lng:123.8854, count:85, color:'#0c9a6e'},
+        {name:'Palawan', lat:9.7498, lng:118.7381, count:75, color:'#5c3d8a'},
+        {name:'Boracay', lat:11.9674, lng:121.9260, count:88, color:'#c9a227'},
+      ],
+      'Malaysia': [
+        {name:'Kuala Lumpur', lat:3.1390, lng:101.6869, count:92, color:'#1a4fd4'},
+        {name:'Penang', lat:5.4164, lng:100.3327, count:80, color:'#0c9a6e'},
+        {name:'Malacca', lat:2.1896, lng:102.2501, count:70, color:'#5c3d8a'},
+        {name:'Cameron Highlands', lat:4.4684, lng:101.3688, count:60, color:'#c9a227'},
+      ],
+      'Cambodia': [
+        {name:'Siem Reap', lat:13.3671, lng:103.8448, count:85, color:'#1a4fd4'},
+        {name:'Phnom Penh', lat:11.5564, lng:104.9282, count:80, color:'#0c9a6e'},
+        {name:'Sihanoukville', lat:10.6266, lng:103.5219, count:70, color:'#5c3d8a'},
+      ],
+      'Myanmar': [
+        {name:'Yangon', lat:16.8661, lng:96.1951, count:85, color:'#1a4fd4'},
+        {name:'Mandalay', lat:21.9588, lng:96.0891, count:75, color:'#0c9a6e'},
+        {name:'Bagan', lat:21.1717, lng:94.8585, count:90, color:'#5c3d8a'},
+      ],
+      'Singapore': [
+        {name:'Singapore', lat:1.3521, lng:103.8198, count:80, color:'#1a4fd4'},
+      ]
+    };
 
-  const cities = [
-    {name:'Jakarta',x:0.28,y:0.55,count:124,color:'#1a4fd4'},
-    {name:'Bandung',x:0.26,y:0.64,count:78,color:'#0c9a6e'},
-    {name:'Semarang',x:0.42,y:0.50,count:64,color:'#5c3d8a'},
-    {name:'Yogyakarta',x:0.40,y:0.60,count:89,color:'#c9a227'},
-    {name:'Surabaya',x:0.56,y:0.50,count:82,color:'#e8421a'},
-  ];
-
-  // Filter city highlight
-  const selectedCity = document.getElementById('cityFilter').value;
-
-  cities.forEach((c,idx) => {
-    const x=c.x*W, y=c.y*H;
-    const r = 8 + c.count/20;
-    const highlighted = selectedCity === 'all' || c.name === selectedCity;
-
-    if (!highlighted) {
-      ctx.globalAlpha = 0.2;
-    }
-
-    // Connections to others
-    if (highlighted) {
-      cities.forEach(c2 => {
-        ctx.strokeStyle = c.color+'22';
-        ctx.lineWidth = 1;
-        ctx.setLineDash([4,6]);
-        ctx.beginPath();
-        ctx.moveTo(x,y);
-        ctx.lineTo(c2.x*W,c2.y*H);
-        ctx.stroke();
-        ctx.setLineDash([]);
+    // Flatten cities array for display
+    const allCities = [];
+    Object.entries(citiesByCountry).forEach(([country, cities]) => {
+      cities.forEach(city => {
+        allCities.push({...city, country});
       });
+    });
+
+    // Store globally for legend updates
+    window.allCitiesData = allCities;
+    window.citiesByCountry = citiesByCountry;
+
+    // Add markers for each city
+    allCities.forEach(city => {
+      const marker = L.circleMarker([city.lat, city.lng], {
+        color: city.color,
+        fillColor: city.color,
+        fillOpacity: 0.8,
+        radius: Math.sqrt(city.count) * 1.5
+      }).addTo(window.tourismMap);
+
+      marker.bindPopup(`
+        <div style="text-align:center; font-family:Arial, sans-serif;">
+          <h3 style="margin:0; color:${city.color};">${city.name}</h3>
+          <p style="margin:3px 0; font-size:12px; color:#666;">${city.country}</p>
+          <p style="margin:5px 0;">${city.count} destinasi wisata</p>
+        </div>
+      `);
+    });
+
+    // Add legend
+    const legend = L.control({position: 'bottomright'});
+    legend.onAdd = function(map) {
+      const div = L.DomUtil.create('div', 'info legend');
+      div.style.backgroundColor = 'white';
+      div.style.padding = '10px';
+      div.style.borderRadius = '5px';
+      div.style.boxShadow = '0 0 15px rgba(0,0,0,0.2)';
+      div.style.maxHeight = '300px';
+      div.style.overflowY = 'auto';
+
+      const selectedCountry = document.getElementById('countryFilter').value;
+      const citiesToShow = selectedCountry === 'all' ? allCities : (citiesByCountry[selectedCountry] || []).map(c => ({...c, country: selectedCountry}));
+      
+      div.innerHTML = `
+        <h4 style="margin:0 0 8px 0; font-size:14px;">Kota Wisata</h4>
+        ${citiesToShow.map(city =>
+          `<div style="display:flex; align-items:center; margin-bottom:4px;">
+            <div style="width:12px; height:12px; border-radius:50%; background:${city.color}; margin-right:8px;"></div>
+            <span style="font-size:11px;">${city.name}, ${city.country}</span>
+          </div>`
+        ).join('')}
+      `;
+
+      return div;
+    };
+    legend.addTo(window.tourismMap);
+    window.mapLegend = legend;
+
+  } else {
+    // Refresh the map view and legend
+    window.tourismMap.invalidateSize();
+    if (window.mapLegend) {
+      window.mapLegend._update();
     }
+  }
 
-    // Glow
-    const grd = ctx.createRadialGradient(x,y,0,x,y,r*4);
-    grd.addColorStop(0, c.color+'66');
-    grd.addColorStop(1,'transparent');
-    ctx.fillStyle = grd;
-    ctx.beginPath();ctx.arc(x,y,r*4,0,Math.PI*2);ctx.fill();
-
-    ctx.fillStyle = c.color;
-    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
-
-    // Count ring
-    ctx.strokeStyle = c.color;
-    ctx.lineWidth = 2;
-    ctx.beginPath();ctx.arc(x,y,r+8,0,Math.PI*2);ctx.stroke();
-
-    // Labels
-    ctx.fillStyle = '#fff';
-    ctx.font = "700 13px Arial, sans-serif";
-    ctx.textAlign = 'center';
-    ctx.fillText(c.name, x, y-r-12);
-
-    ctx.fillStyle = c.color;
-    ctx.font = "600 11px monospace";
-    ctx.fillText(c.count + ' destinasi', x, y-r-28);
-
-    ctx.globalAlpha = 1;
-  });
-
-  // Legend
-  const legendX = W - 200, legendY = H - 140;
-  ctx.fillStyle = 'rgba(255,255,255,0.05)';
-  ctx.beginPath();
-  ctx.roundRect(legendX, legendY, 180, 120, 12);
-  ctx.fill();
-
-  ctx.fillStyle = 'rgba(255,255,255,0.4)';
-  ctx.font = "600 10px Arial, sans-serif";
-  ctx.textAlign = 'left';
-  ctx.fillText('LEGENDA', legendX+14, legendY+20);
-
-  cities.forEach((c,i) => {
-    ctx.fillStyle = c.color;
-    ctx.beginPath();ctx.arc(legendX+22, legendY+36+i*18, 5, 0, Math.PI*2);ctx.fill();
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    ctx.font = "500 10px Arial, sans-serif";
-    ctx.fillText(`${c.name} (${c.count})`, legendX+34, legendY+40+i*18);
-  });
+  // Update map based on country filter
+  const selectedCountry = document.getElementById('countryFilter').value;
+  if (selectedCountry !== 'all' && window.citiesByCountry[selectedCountry]) {
+    const cities = window.citiesByCountry[selectedCountry];
+    if (cities.length > 0) {
+      const lats = cities.map(c => c.lat);
+      const lngs = cities.map(c => c.lng);
+      const bounds = [[Math.min(...lats), Math.min(...lngs)], [Math.max(...lats), Math.max(...lngs)]];
+      window.tourismMap.fitBounds(bounds, {padding: [50, 50]});
+    }
+  } else {
+    // Show Southeast Asia
+    window.tourismMap.setView([5, 110], 4);
+  }
 }
 
 // ============================
@@ -749,7 +799,6 @@ function startRealtimeSimulation() {
       const base = 8.2 + (Math.random()-0.5)*0.4;
       kpiRev.textContent = '$' + base.toFixed(1) + 'B';
     }
-    updateLastUpdate();
   }, 5000);
 }
 
@@ -1063,16 +1112,11 @@ function getQueryParams() {
   return Object.fromEntries(new URLSearchParams(window.location.search).entries());
 }
 
-function getPageType() {
-  return document.body.dataset.page || '';
-}
-
 // ============================
 // INIT
 // ============================
 window.addEventListener('DOMContentLoaded', async () => {
   await loadDataset();
-  startClock();
   revealElements();
   startRealtimeSimulation();
 
@@ -1088,9 +1132,8 @@ window.addEventListener('DOMContentLoaded', async () => {
     switchSidebar('dashboard');
     initCharts();
     animateBars();
-    updateLastUpdate();
-    if (params.city) {
-      document.getElementById('cityFilter').value = params.city;
+    if (params.country) {
+      document.getElementById('countryFilter').value = params.country;
       applyFilters();
     } else {
       updateKPIs();
@@ -1100,6 +1143,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   if (pageType === 'pipeline') {
     runCountUps();
   }
+
 
   if (!CanvasRenderingContext2D.prototype.roundRect) {
     CanvasRenderingContext2D.prototype.roundRect = function(x,y,w,h,r) {

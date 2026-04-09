@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tarveling — explore Your World</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="common.css" />
   <link rel="stylesheet" href="dashboard.css" />
@@ -19,13 +21,6 @@
       <a class="nav-link" href="home.html">Home</a>
       <a class="nav-link active" href="dashboard.html">Dashboard</a>
       <a class="nav-link" href="pipeline.html">Pipeline</a>
-    </div>
-    <div class="nav-actions">
-      <div class="live-badge">
-        <div class="live-dot"></div>
-        LIVE
-      </div>
-      <span id="live-clock">--:--:--</span>
     </div>
   </nav>
 
@@ -62,29 +57,33 @@
     <main class="main-content">
       <div class="section-header">
         <h2 class="section-title" style="font-size:1.8rem;">Regional Tourism Performance</h2>
-        <p style="color:var(--muted); font-size:0.875rem;">Real-time analytics — <span id="last-update">Memuat...</span></p>
       </div>
 
       <div class="filter-bar" id="filterBar">
         <div class="filter-group">
-          <div class="filter-label">Pilih Kota</div>
-          <select class="filter-select" id="cityFilter" onchange="applyFilters()">
-            <option value="all">Semua Kota</option>
-            <option value="Jakarta">Jakarta</option>
-            <option value="Yogyakarta">Yogyakarta</option>
-            <option value="Bandung">Bandung</option>
-            <option value="Surabaya">Surabaya</option>
-            <option value="Semarang">Semarang</option>
+          <div class="filter-label">Pilih Negara</div>
+          <select class="filter-select" id="countryFilter" onchange="applyFilters()">
+            <option value="all">Semua Negara</option>
+            <option value="Indonesia">Indonesia</option>
+            <option value="Thailand">Thailand</option>
+            <option value="Vietnam">Vietnam</option>
+            <option value="Philippines">Philippines</option>
+            <option value="Malaysia">Malaysia</option>
+            <option value="Cambodia">Cambodia</option>
+            <option value="Myanmar">Myanmar</option>
+            <option value="Singapore">Singapore</option>
           </select>
         </div>
         <div class="filter-group">
           <div class="filter-label">Kategori Wisata</div>
           <select class="filter-select" id="catFilter" onchange="applyFilters()">
             <option value="all">Semua Kategori</option>
-            <option value="Nature">Alam</option>
-            <option value="Historical">Sejarah</option>
+            <option value="Adventure">Petualangan</option>
+            <option value="Beach">Pantai</option>
             <option value="Cultural">Budaya</option>
-            <option value="Entertainment">Hiburan</option>
+            <option value="Historical">Sejarah</option>
+            <option value="Nature">Alam</option>
+            <option value="Urban">Perkotaan</option>
           </select>
         </div>
         <div class="filter-group">
@@ -159,7 +158,7 @@
         <div class="chart-card" style="min-height:720px;">
           <div class="chart-title">Sebaran Destinasi — Peta Interaktif</div>
           <div class="chart-subtitle">Titik konsentrasi destinasi wisata per kota</div>
-          <canvas id="mapViewCanvas" style="width:100%; height:650px; border-radius:12px; margin-top:8px;"></canvas>
+          <div id="mapContainer" style="width:100%; height:650px; border-radius:12px; margin-top:8px;"></div>
         </div>
       </div>
 
